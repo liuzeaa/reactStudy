@@ -1,12 +1,10 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 
-var Student = React.createClass({
-    render:function () {
-        return(
+
+export default class Student extends React.Component {
+    render(){
+        return (
             <div>Student</div>
         )
     }
-})
-
-export default Student
+}

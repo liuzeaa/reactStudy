@@ -2,12 +2,10 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 
 
-var TodoMvc = React.createClass({
-    render:function () {
-        return(
+export default class  TodoMvc extends React.Component{
+    render(){
+        return (
             <div >TodoMvc</div>
         )
     }
-})
-
-export default TodoMvc
+}
