@@ -32,30 +32,24 @@ function getIcon(ext,isFolder) {
 
 var FileItem = React.createClass({
     render(){
-        const {name,onChange,path,ext,isFolder,action,onRename,active,onPick} = this.props
+        const {name,onChange,path,ext,isFolder,action,onRename,active,onPick,rename} = this.props
 
         const type = getIcon(ext,isFolder)
 
-        const editStatus = name == action.name
 
 
-        const act = name== active
+
+        const act = name == active //被激活
         return(
-            <li className={act?"file-item active":"file-item"}>
-                <span className="file-item-icon"
-                      onClick={this.handleClick}
-                      onMouseDown={this.mousedown}
-                >
+            <li
+                className={act?"file-item active":"file-item"}
+                onClick={this.handleClick}
+                onMouseDown={this.mousedown}
+            >
+                <span className="file-item-icon">
                     <Icon type={type} />
                 </span>
-                <p>
-                    <span style={{display:editStatus?'none':'block'}} className="file-item-name">{name}</span>
-                    <span style={{display:editStatus?'block':'none'}}>
-                        <Input onPressEnter={(e)=>onRename({path:path,name:e.target.value})}/>
-                    </span>
-                </p>
-
-
+                <span className="file-item-name">{name}</span>
             </li>
         )
     },
@@ -92,7 +86,8 @@ var FileList = React.createClass({
             action,
             onRename,
             active,
-            onPick
+            onPick,
+            rename
         }= this.props
         var nodes = file.map(function (obj) {
             return (
@@ -106,6 +101,7 @@ var FileList = React.createClass({
                     action={action}
                     onRename={onRename}
                     active={active}
+                    rename={rename}
                     onPick={onPick}
                 />
             )

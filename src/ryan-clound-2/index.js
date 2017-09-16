@@ -10,7 +10,8 @@ import request from 'superagent'
 import FileList from './file-list'
 import Nav from './nav'
 import Menu from './menu'
-import {getFileList,rename} from './api'
+import Action from './action'
+import {getFileList,rename,mkdir,remove} from './api'
 import './index.css'
 
 import {
@@ -42,7 +43,10 @@ var Cloud = React.createClass({
                 y:0,
                 display:false
             },
-            active:''
+            active:'',
+            newValue:'',
+            action:null,
+            showAction:false
         }
     },
     render(){
@@ -58,48 +62,145 @@ var Cloud = React.createClass({
                 <FileList
                     file={this.state.file}
                     path={this.state.path}
-                    action={{
-
-                    }}
                     active={this.state.active}
-                    onPick={(name)=>this.setState({active:name})}
+                    onPick={(name)=>this.pickItem(name)}
                     loading={this.state.loading}
-                    onRename={this.rename}
                 />
                 <Menu
                     display={this.state.menu.display}
                     x={this.state.menu.x}
                     y={this.state.menu.y}
-                    onClickRename={(e)=>console.log(this.state.active)}
+                    onAction={(action)=>this.menuClick(action)}
                 />
+                <Action
+                    action={this.state.action}
+                    onRename={this.rename}
+                    onNew={this.newFolder}
+                    oldValue={this.state.active}
+                    newValue={this.state.newValue}
+                    visible={this.state.showAction}
+                    onCancel={this.hideAction}
+                    onChange={(e)=>this.setState({newValue:e.target.value})}
+                />
+
             </div>
         )
     },
+    menuClick(action){
+        var hasPicked = !!this.state.active
+        if(action == 'rename' && !hasPicked){
+            Modal.error({
+                title:'文件重命名',
+                content:'请右键选中你要命名的文件(夹)'
+            })
+            return
+        }
+
+        if(action == 'rename' || action == 'newFolder'){
+            this.setState({action:action})
+            this.showAction()
+            return
+        }
+        if(action == 'delete' && !hasPicked){
+            Modal.error({
+                title:'文件删除',
+                content:'请右键选中你要命名的文件(夹)'
+            })
+            return
+        }
+        if(action == 'delete'){
+            this.deleteFile()
+        }
+
+        this.hideMenu()
+    },
     mouseDown(e){
         if(e.button == 2){
-            this.setState({
-                menu:{
-                    x:e.clientX,
-                    y:e.clientY,
-                    display:true
-                }
-            })
+            this.showMenu(e)
         }else {
-            console.log('zhuomian click')
-            this.setState({
-                menu:{
-                    x:e.clientX,
-                    y:e.clientY,
-                    display:false,
-                },
-                active:''
-            })
+            this.hideMenu()
+            this.unPickItem()
         }
     },
-    rename(query){
-        rename(query,function () {
-            console.log('success ful')
+    deleteFile(){
+        var that = this
+        var path = this.state.path.join('/')+'/'+this.state.active
+        remove({
+            path:path
+        },function () {
+            var file = []
+            var f = that.state.file
+            for(var i=0;i<f.length;i++){
+                if(f[i].name!=that.state.active){
+                    file.push(f[i])
+                }
+            }
+            message.success('操作成功')
+            that.setState({file})
+            that.unPickItem()
         })
+    },
+    rename(newName){
+        var path = this.state.path.join('/')+'/'+this.state.active
+
+        var query = {
+            name:newName,
+            path:path
+        }
+        var that = this
+        rename(query,function (res) {
+            that.hideAction()
+            var file = that.state.file.map(function (obj) {
+
+                if(obj.name == that.state.active){
+                    obj = res
+                }
+                return obj
+            })
+            message.success('操作成功')
+            that.setState({file:file})
+            that.pickItem(newName)
+            that.hideAction()
+        })
+    },
+    newFolder(name){
+        var that = this
+        var path = this.state.path.join('/')+'/'+this.state.active
+        mkdir({
+            path:path,
+            name:name
+        },function (res) {
+            var file = that.state.file
+            file.push(res)
+            that.setState({file})
+            that.pickItem(name)
+            that.hideAction()
+            message.success('操作成功')
+        })
+    },
+    showAction(){
+        this.setState({showAction:true})
+    },
+    hideAction(){
+        this.setState({showAction:false})
+    },
+    showMenu(e){
+        this.setState({
+            menu:{
+                x:e.clientX,
+                y:e.clientY,
+                display:true
+            }
+        })
+    },
+    hideMenu(){
+        this.setState({menu:{display:false}})
+    },
+    pickItem(name){
+        this.setState({active:name,newValue:name})
+    },
+    unPickItem(){
+        this.setState({active:'',newValue:name})
     },
     getFile(path){
 
