@@ -1,11 +1,4 @@
 import React from 'react'
-
-import {Table,Button,Modal,Form,Input,Radio,Row,Col,message} from 'antd'
-const FormItem = Form.Item
-const RadioGroup = Radio.Group;
-const RadioButton = Radio.Button;
-import 'antd/dist/antd.css'
-
 import request from 'superagent'
 import FileList from './file-list'
 import Nav from './nav'
@@ -19,6 +12,13 @@ import {
     Route,
     hashHistory
 } from 'react-router';
+import 'antd/dist/antd.css'
+import {Table,Button,Modal,Form,Input,Radio,Row,Col,message} from 'antd'
+const FormItem = Form.Item
+const RadioGroup = Radio.Group;
+const RadioButton = Radio.Button;
+
+
 
 var R = React.createClass({
     render(){

@@ -24,7 +24,7 @@ const header = [
 ]
 
 
-let api = 'http://101.200.129.112:9527/react1/student/'
+const api = 'http://101.200.129.112:9527/react1/student/'
 
 console.log(request)
 
@@ -48,6 +48,9 @@ class ReactTest extends React.Component{
     onSelectChange = (selectedRowKeys)=> {
         var id = selectedRowKeys[0]
         if(!id){
+            this.setState({
+                selectedRowKeys: selectedRowKeys
+            })
             return
         }
         var items = this.state.items
@@ -56,10 +59,10 @@ class ReactTest extends React.Component{
         })
         this.setState({
             selectedRowKeys:selectedRowKeys ,
-            name:obj.name,
-            age:obj.age,
-            sex:obj.sex,
-            single:obj.single,
+            name:obj[0].name,
+            age:obj[0].age,
+            sex:obj[0].sex,
+            single:obj[0].single,
         });
     }
 
@@ -78,7 +81,7 @@ class ReactTest extends React.Component{
                 <div className="content">
                     <Button icon="plus" type='primary' onClick={(e)=>this.setState({action:'add'})}>增加</Button>&nbsp;
                     <Button icon='edit' disabled={disabled} onClick={(e)=>this.setState({action:'edit'})} type='ghost'>编辑</Button>&nbsp;
-                    <Button icon='delete' disabled={disabled} onClick={this.handleDelete}>删除</Button>
+                    <Button icon='delete' disabled={disabled} onClick={this.handleDelete} type='danger'>删除</Button>
                     <br/><br/>
                     <Table
                         loading={this.state.loading}
@@ -114,7 +117,8 @@ class ReactTest extends React.Component{
             age:that.state.age,
             single:that.state.single
         }
-        var editRequest = api + id + '/'
+        var editRequest = api + id + '/';
+        debugger;
         request
             .patch(editRequest)
             .send(obj)
@@ -123,14 +127,17 @@ class ReactTest extends React.Component{
 
                 items= items.map(function (o) {
                     if(o.id === id){
-                        o = obj
+                        obj.id= o.id;
+                        obj.key = o.id;
+                        o = obj;
                     }
                     return o
                 })
 
                 that.setState({
                     items:items,
-                    action:null
+                    action:null,
+                    selectedRowKeys:[]
                 })
                 message.success('成功更新数据'+id)
             })
@@ -182,7 +189,8 @@ class ReactTest extends React.Component{
                 items.unshift(res.body)
                 that.setState({
                     items:items,
-                    action:null
+                    action:null,
+                    selectedRowKeys:[]
                 })
                 message.success('成功添加数据'+item.name)
             })
