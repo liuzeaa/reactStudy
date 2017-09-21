@@ -1,7 +1,6 @@
 import React from 'react'
 import {Modal,Input} from 'antd'
 
-
 export default class  Action extends React.Component{
     render(){
         const {newValue,onChange,onCancel,visible} = this.props

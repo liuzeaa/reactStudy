@@ -1,13 +1,13 @@
 import request from 'superagent'
 
-const host = 'http://101.200.129.112:9527/'
-const GET_FILE = host + 'file/get/'
-const RENAME_FILE = host + 'file/rename/'
-const NEW_FOLDER = host + 'file/mkdir/'
-const REMOVE = host + 'file/remove/'
-const PASTE = host + 'file/copy'
-const CUT = host + 'file/move'
-
+const host = 'http://101.200.129.112:9527/';
+const GET_FILE = host + 'file/get/';
+const RENAME_FILE = host + 'file/rename/';
+const NEW_FOLDER = host + 'file/mkdir/';
+const REMOVE = host + 'file/remove/';
+const PASTE = host + 'file/copy';
+const CUT = host + 'file/move';
+const STATIC = host+'static/';
 export function getFileList(path,successCb,errorCb) {
     request
         .get(GET_FILE)
