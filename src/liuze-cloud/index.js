@@ -1,30 +1,18 @@
 import React from 'react'
 import _ from 'underscore'
 
+import {getFileList,rename,newFolder,remove,paste,cut} from './api'
+import './index.css'
+import 'antd/dist/antd.css'
+
 import Nav from './nav'
 import Menu from './menu'
 import Action from './action'
 import FileList from './filelist'
-import {getFileList,rename,newFolder,remove,paste,cut} from './api'
-import './index.css'
-import 'antd/dist/antd.css'
-import {
-    Router,
-    Route,
-    hashHistory
-} from 'react-router';
+
 import {Modal,message} from 'antd'
 
-class R extends React.Component{
- render(){
-     return (
-         <Router history={hashHistory}>
-             <Route path='*' component={Cloud}/>
-         </Router>
-     )
- }
-}
-class Cloud extends React.Component{
+export default class Cloud extends React.Component{
     constructor(props){
         super(props)
         this.state={
@@ -232,16 +220,17 @@ class Cloud extends React.Component{
         if(type === 'paste'){
             var isCopy = !!_.keys(this.state.copyItem).length,
                 isCut = !!_.keys(this.state.cutItem).length
+            var query={
+                old_path:that.state.copyItem.path,
+                new_path:that.state.path.join('/')+'/'+that.state.copyItem.name
+            }
             if(isCopy){
                 for(var i=0;i<file.length;i++){
                     if(file[i].name === item.name){
                         has = true
                     }
                 }
-                var query={
-                    old_path:that.state.copyItem.path,
-                    new_path:that.state.path.join('/')+'/'+that.state.copyItem.name
-                }
+
                 if(has){
                     query.new_path = that.state.path.join('/')+'/'+that.state.copyItem.name+'-1'
                 }
@@ -343,7 +332,3 @@ class Cloud extends React.Component{
         console.log('componentWillReceiveProps',splat)
     }
 }
-
-
-
-export default R
